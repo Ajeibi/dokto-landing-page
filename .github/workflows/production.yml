@@ -1,0 +1,30 @@
+name: Deploy to Next app to Virtual Machine
+
+on:
+  push:
+    branches: [staging]
+  pull_request:
+    branches: [staging]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Deploy to Digital VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: 172.174.205.47
+          username: ${{ secrets.VM_USERNAME }}
+          password: ${{ secrets.VM_PASSWORD }}
+          script: |
+            cd ~/dokto/dokto
+            sudo git pull https://${{ secrets.USER_GITHUB }}:${{ secrets.TOKEN_GITHUB }}@github.com/DokRx/dokto.git staging
+            sudo rm -rf node_modules
+            sudo npm install
+            sudo npm run build
+            sudo pm2 restart dokto-landing
+        

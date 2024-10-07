@@ -1,0 +1,1 @@
+export const AGORA_APP_ID = process.env.NEXT_PUBLIC_AGORA_APP_ID || '522618a55ca4446c8ca8055af853f281';
