@@ -4,16 +4,44 @@ import { AppointmentInfo } from "@/api/dashboard/appointments/get-appointments";
 import { appointment_tabs } from "@/constants/appointments";
 import { parseAppointmentTabs } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppointmentCancelledModal } from "../modals/appointment/appointment-cancelled-modal";
 import { AppointmentDetailsModal } from "../modals/appointment/appointment-details-modal";
 import { CancelAppointmentsModal } from "../modals/appointment/cancel-appointment-modal";
 import { Button } from "../ui/button";
-import { IDoctorDetails } from "../virtual-call/waiting-screen";
 import { useDoctor } from "@/context/doctor";
+import Cookies from "js-cookie";
+import { useAppointment } from "@/context/appointments";
+import { fetchAppointmentDetailsAndToken } from "@/api/dashboard/appointments/appointmentService";
 
 export const AppointmentsMenu = ({ row }: { row: AppointmentInfo }) => {
   const router = useRouter();
+  const { setAppointmentInfoData } = useAppointment();
+  const [userToken, setUserToken] = useState<string | null>(null);
+  const token = Cookies.get("dokto-token");
+
+  useEffect(() => {
+    const generateToken = async () => {
+      try {
+        const data = await fetchAppointmentDetailsAndToken(row._id, token!);
+        setAppointmentInfoData({
+          patientFirstName: data.patientFirstName,
+          patientLastName: data.patientLastName,
+          doctorFirstName: data.doctorFirstName,
+          doctorLastName: data.doctorLastName,
+          doctorType: data.doctorType,
+          rating: data.rating,
+          imgUrl: data.imgUrl,
+          profilePhoto: data.profilePhoto,
+        });
+        setUserToken(data.token);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    generateToken();
+  }, [row._id, token, setAppointmentInfoData]);
 
   const param = parseAppointmentTabs(
     appointment_tabs,
@@ -28,17 +56,16 @@ export const AppointmentsMenu = ({ row }: { row: AppointmentInfo }) => {
 
   const { setDoctor } = useDoctor();
 
-  const doctor: IDoctorDetails = {
-    name: `${row.doctorId.personalInfo.firstName} ${row.doctorId.personalInfo.lastName}`,
-    role: row.doctorType,
-    image: row.doctorId.personalInfo.imgUrl,
-    ratings: row.rating,
-  };
-
   const handleJoinCall = () => {
-    setDoctor(doctor);
+    const appointmentId = row._id;
+
+    if (!userToken) {
+      console.error("Token is not ready yet");
+      return;
+    }
+
     router.push(
-      `/virtual-call?call=${row.doctorId._id}&appointment=${row._id}`
+      `/virtual-call?channelName=${appointmentId}&token=${userToken}`
     );
   };
 

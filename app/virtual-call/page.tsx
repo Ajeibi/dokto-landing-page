@@ -1,19 +1,18 @@
 "use client";
 
-import { WaitingScreen } from "@/components/virtual-call/waiting-screen";
-import { useUser } from "@/context/user";
 import { useSearchParams } from "next/navigation";
+import WaitingScreen from "@/components/virtual-call/waiting-screen";
 
 export default function VirtualCall() {
-  const { User } = useUser();
-  const params = useSearchParams();
-  const calleeId = params.get("call");
+  const searchParams = useSearchParams();
+
+  const token = searchParams.get("token");
+  const channelName = searchParams.get("channelName");
 
   return (
     <WaitingScreen
-      userName={`${User?.firstName} ${User?.lastName}`}
-      calleeIdd={calleeId!}
-      webrtcSignalServerUrl="https://api.dokto.health/api/v1/"
+      token={token}
+      channelName={channelName}
     />
   );
 }

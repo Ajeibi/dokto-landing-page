@@ -76,7 +76,7 @@ export const AppointmentCompletedModal = ({
               ) : (
                 <Button
                   className="w-full rounded-full bg-[#2CACDA] hover:bg-[#26a3d1]"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleCancelClick}
                 >
                   Okay
                 </Button>

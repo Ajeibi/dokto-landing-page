@@ -9,6 +9,8 @@ import { PractitionerAppointmentDetailsModal } from "@/components/modals/appoint
 import CompletedAppointmentModal from "./completed-appointment-modal";
 import { PractitionerAppointmentInfo } from "@/api/dashboard/appointments/practitioner/get-practitioner-appointments";
 import Cookies from "js-cookie";
+import { useAppointment } from "@/context/appointments";
+import { fetchAppointmentDetailsAndToken } from "@/api/dashboard/appointments/appointmentService";
 
 export const PractitionerAppointmentsMenu = ({
   row,
@@ -16,30 +18,32 @@ export const PractitionerAppointmentsMenu = ({
   row: PractitionerAppointmentInfo;
 }) => {
   const router = useRouter();
+  const { setAppointmentInfoData } = useAppointment();
   const [userToken, setUserToken] = useState<string | null>(null);
   const token = Cookies.get("dokto-token");
 
   useEffect(() => {
-    const generateToken = async () => {
+    const generateTokenAndFetchData = async () => {
       try {
-        const response = await fetch(`https://api.dokto.health/api/v1/appointment/meeting/${row._id}`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const data = await fetchAppointmentDetailsAndToken(row._id, token!);
+        setAppointmentInfoData({
+          patientFirstName: data.patientFirstName,
+          patientLastName: data.patientLastName,
+          doctorFirstName: data.doctorFirstName,
+          doctorLastName: data.doctorLastName,
+          doctorType: data.doctorType,
+          rating: data.rating,
+          imgUrl: data.imgUrl,
+          profilePhoto: data.profilePhoto,
         });
-        if (!response.ok) {
-          throw new Error("Something went wrong");
-        }
-        const { data } = await response.json();
         setUserToken(data.token);
-        console.log("Token generated: ", data);
       } catch (error) {
         console.error(error);
       }
     };
-    generateToken();
-  }, [row._id, token]);
+
+    generateTokenAndFetchData();
+  }, [row._id, token, setAppointmentInfoData]);
 
   const param = parseAppointmentTabs(
     appointment_tabs,
@@ -73,16 +77,13 @@ export const PractitionerAppointmentsMenu = ({
 
   const handleJoinCall = () => {
     const appointmentId = row._id;
-    const doctorId = row.doctorId._id;
 
     if (!userToken) {
       console.error("Token is not ready yet");
       return;
     }
 
-    router.push(
-      `/virtual-call?call=${doctorId}&appointment=${appointmentId}&channelName=${appointmentId}&token=${userToken}`
-    );
+    router.push(`/virtual-call?channelName=${appointmentId}&token=${userToken}`);
   };
 
   const handleDetailsClick = () => {

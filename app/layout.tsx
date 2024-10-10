@@ -6,7 +6,7 @@ import StoreProvider from "@/context/store";
 import UserProvider from "@/context/user";
 import { Toaster } from "@/components/ui/sonner";
 import DoctorProvider from "@/context/doctor";
-import { AgoraProvider } from "@/context/agora";
+import { AppointmentProvider } from "@/context/appointments";
 
 const jakarta = localFont({
   src: "./PlusJakartaSans-VariableFont_wght.ttf",
@@ -30,10 +30,10 @@ export default function RootLayout({
         <ReactQueryProvider>
           <UserProvider>
             <DoctorProvider>
-              <AgoraProvider>
+              <AppointmentProvider>
                 <div className="w-full h-screen">{children}</div>
                 <Toaster position="top-right" richColors />
-              </AgoraProvider>
+              </AppointmentProvider>
             </DoctorProvider>
           </UserProvider>
         </ReactQueryProvider>
