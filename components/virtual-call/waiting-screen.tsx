@@ -5,6 +5,12 @@ interface WaitingScreenProps {
   token: string | null;
   channelName: string | null;
 }
+export interface IDoctorDetails {
+  name: string;
+  role: string;
+  image: string;
+  ratings: number;
+}
 
 const WaitingScreen: React.FC<WaitingScreenProps> = ({
   token,
