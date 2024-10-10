@@ -183,7 +183,7 @@ function Videos(props: { channelName: string; AppID: string }) {
                   </div>
                 </div>
               )}
-              <div className="bg-white p-4 shadow-md rounded-2xl mt-2 mb-5">
+              <div className="bg-white p-2 md:p-4 shadow-md rounded-2xl mt-2 mb-5 md:mx-0 mx-2">
                 <Paragraph className="text-center md:text-sm text-xs text-black">
                   {isDoctor
                     ? `${fullPatientName} is about to join the call, please hold on for a few minutes.`
@@ -193,7 +193,7 @@ function Videos(props: { channelName: string; AppID: string }) {
             </section>
 
             <div className="flex-1 flex items-center justify-center w-full relative">
-              <div className="w-[50%] h-[100%] bg-gray-950 rounded-2xl overflow-hidden relative">
+              <div className="md:w-[50%] w-full h-[100%] bg-gray-950 md:rounded-2xl overflow-hidden relative">
                 <LocalVideoTrack
                   track={localCameraTrack}
                   play={true}
@@ -208,14 +208,14 @@ function Videos(props: { channelName: string; AppID: string }) {
           </>
         ) : (
           <>
-            <div className="absolute inset-0 z-0 md:mx-20 mb-[100px]">
+            <div className="absolute inset-0 z-0 md:mx-20 md:mb-[100px]">
               <RemoteUser
                 user={remoteUsers[0]}
                 className="w-full h-full object-cover"
               />
             </div>
 
-            <div className="absolute bottom-[100px] right-4 w-[25%] h-[30%] z-10 rounded-full">
+            <div className="absolute md:bottom-[100px] left-4 md:right-4 w-[25%] md:h-[30%] h-[20%] z-10 rounded-full">
               <LocalVideoTrack
                 track={localCameraTrack}
                 play={true}
